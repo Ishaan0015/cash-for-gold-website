@@ -1,0 +1,647 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gold Buy/Sell Calculator - Cash for Gold</title>
+  <meta name="description" content="Estimate gold buying and selling values by karat, weight, making charges, GST, stones, and live or manual per-gram rates." />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #16120a, #050505 42%, #050505 100%);
+      min-height: 100vh;
+      color: #f8fafc;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .calculator-nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(5, 5, 5, 0.86);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+    }
+
+    .calculator-nav a {
+      color: #d1d5db;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .calculator-nav .brand {
+      color: #f9fafb;
+      letter-spacing: 0.15em;
+    }
+
+    .calculator-nav .nav-link {
+      border-radius: 999px;
+      padding: 0.75rem 1rem;
+    }
+
+    .calculator-nav .nav-link:hover,
+    .calculator-nav .nav-link.active {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .app-card {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      background: rgba(255, 255, 255, 0.035);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    .hero-bar {
+      background: linear-gradient(135deg, #d4af37 0%, #f7d486 100%);
+      color: #111;
+    }
+
+    .hero-bar h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+    }
+
+    .status-pill {
+      border-radius: 999px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .rate-box {
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(240, 211, 139, 0.35);
+      border-radius: 1rem;
+      color: #ffffff;
+    }
+
+    .rate-box .text-muted {
+      color: #f8fafc !important;
+    }
+
+    .rate-box .fs-4,
+    .rate-box .fw-semibold {
+      color: #ffffff;
+    }
+
+    .rate-box .bg-white {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      color: #f8fafc;
+    }
+
+    .tab-btn {
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      border-color: #d4af37 !important;
+      color: #854e0e !important;
+    }
+
+    .result-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+    }
+
+    .small-label {
+      font-size: 0.92rem;
+    }
+
+    .text-muted {
+      color: #cbd5e1 !important;
+    }
+
+    .form-label {
+      color: #e5e7eb;
+    }
+
+    .form-control,
+    .form-select {
+      background-color: rgba(255, 255, 255, 0.055);
+      border-color: rgba(255, 255, 255, 0.14);
+      color: #f8fafc;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color: rgba(212, 175, 55, 0.85);
+      box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.16);
+      color: #ffffff;
+    }
+
+    .form-control::placeholder {
+      color: #94a3b8;
+    }
+
+    .form-select option {
+      color: #111827;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #d4af37 0%, #f5d06f 100%);
+      border: none;
+      color: #050505;
+      font-weight: 700;
+    }
+
+    .btn-outline-dark {
+      border-color: rgba(255, 255, 255, 0.28);
+      color: #f8fafc;
+    }
+
+    .btn-outline-dark:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <header class="calculator-nav">
+    <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3 py-3">
+      <a class="brand" href="index.html">Cash for Gold</a>
+      <nav class="d-flex flex-wrap gap-2">
+        <a class="nav-link" href="index.html">Home</a>
+        <a class="nav-link active" href="Calculator.html">Calculator</a>
+        <a class="nav-link" href="query.html">Inquiry Form</a>
+        <a class="nav-link" href="contact.html">Contact Us</a>
+      </nav>
+    </div>
+  </header>
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-xl-9 col-lg-10">
+        <div class="card app-card overflow-hidden">
+          <div class="row g-0">
+            <div class="col-md-5 hero-bar p-4 d-flex flex-column justify-content-between">
+              <div>
+                <h1>Gold Buy/Sell Calculator</h1>
+                <p class="mb-0">Live rates, karat conversion, stone deductions, and final estimates.</p>
+              </div>
+              <div class="mt-4">
+                <div class="d-flex gap-2 align-items-center mb-2">
+                  <span class="status-pill bg-white text-dark">Buy & sell</span>
+                </div>
+                <div class="mb-3 rate-box p-3">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span class="small-label">Today</span>
+                    <span class="small-label" id="dateLabel">Loading...</span>
+                  </div>
+                  <div class="fs-5 fw-semibold" id="dateTime">Loading date & time...</div>
+                </div>
+                <button class="btn btn-dark w-100" id="refreshRateBtn" type="button">Refresh Live Rate</button>
+              </div>
+            </div>
+
+            <div class="col-md-7 p-4">
+              <div id="root"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    const KARAT_OPTIONS = [
+      { label: '24K (100%)', purity: 1.0 },
+      { label: '22K (91.6%)', purity: 0.916 },
+      { label: '18K (75.0%)', purity: 0.75 },
+      { label: '14K (58.5%)', purity: 0.585 }
+    ];
+
+    const RATE_ENDPOINT_24K_GRAM = 'https://bcast.slnbullion.com:443/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/slnmjdma';
+    const RATE_ENDPOINT_INDIA_GOLD_10G = 'https://bcast.slnbullion.com:443/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sln';
+    const LIVE_URLS = [
+      'https://api.allorigins.win/raw?url=https://slnbullion.in/LiveRates.html',
+      'https://api.codetabs.com/v1/proxy?quest=https://slnbullion.in/LiveRates.html',
+      'https://thingproxy.freeboard.io/fetch/https://slnbullion.in/LiveRates.html'
+    ];
+
+    function isValidRate(value) {
+      return Number.isFinite(value) && value > 10;
+    }
+
+    function parseLiveRate(html) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const text = (doc.body.innerText || doc.documentElement.innerText || '').replace(/\s+/g, ' ');
+      let match = text.match(/GOLD\s*[:\-]?\s*([0-9]+(?:\.[0-9]+)?)/i);
+      if (!match) {
+        match = text.match(/GOLD[\s\S]{0,50}?([0-9]+(?:\.[0-9]+)?)/i);
+      }
+      const rate = match ? parseFloat(match[1]) : null;
+      return isValidRate(rate) ? rate : null;
+    }
+
+    function parseSlnMjdmaRate(text) {
+      const lines = text.split(/\r?\n/);
+      for (const line of lines) {
+        const columns = line.trim().split('\t').filter(Boolean);
+        if (columns[1] && columns[1].toUpperCase() === 'GOLD') {
+          const rate = parseFloat(columns[3] || columns[2] || columns[4]);
+          if (isValidRate(rate)) {
+            return rate;
+          }
+        }
+      }
+      return null;
+    }
+
+    function parseSlnIndiaGold10gRate(text) {
+      const lines = text.split(/\r?\n/);
+      for (const line of lines) {
+        const columns = line.trim().split('\t').filter(Boolean);
+        if (columns[1] && columns[1].toUpperCase() === 'INDIA GOLD') {
+          const rate = parseFloat(columns[2] || columns[3] || columns[4]);
+          if (isValidRate(rate)) {
+            return rate;
+          }
+        }
+      }
+      return null;
+    }
+
+    function formatINR(value) {
+      return Number.isFinite(value) ? `₹${value.toFixed(2)}` : '-';
+    }
+
+    function GoldCalculator() {
+      const [base24Rate, setBase24Rate] = useState(null);
+      const [selectedKarat, setSelectedKarat] = useState(KARAT_OPTIONS[1]);
+      const [weight, setWeight] = useState('');
+      const [makingCharges, setMakingCharges] = useState('10');
+      const [tax, setTax] = useState('3');
+      const [result, setResult] = useState(null);
+      const [status, setStatus] = useState('Loading live buy rate...');
+      const [timestamp, setTimestamp] = useState(new Date());
+      const [manual24Rate, setManual24Rate] = useState('');
+      const [fetchError, setFetchError] = useState('');
+      const [indiaGold10gRate, setIndiaGold10gRate] = useState(null);
+      const [indiaGold10gPerGram, setIndiaGold10gPerGram] = useState(null);
+      const [sellRate, setSellRate] = useState('');
+      const [stoneWeight, setStoneWeight] = useState('0');
+      const [stoneType, setStoneType] = useState('None');
+      const [diamondValue, setDiamondValue] = useState('0');
+      const [mode, setMode] = useState('buy');
+
+      useEffect(() => {
+        fetchLive24KRate();
+        const interval = setInterval(() => setTimestamp(new Date()), 1000);
+        const refreshButton = document.getElementById('refreshRateBtn');
+        if (refreshButton) {
+          refreshButton.onclick = fetchLive24KRate;
+        }
+        return () => {
+          clearInterval(interval);
+          if (refreshButton) {
+            refreshButton.onclick = null;
+          }
+        };
+      }, []);
+
+      useEffect(() => {
+        document.getElementById('dateTime').textContent = timestamp.toLocaleString([], {
+          dateStyle: 'medium',
+          timeStyle: 'short'
+        });
+        document.getElementById('dateLabel').textContent = timestamp.toLocaleDateString();
+      }, [timestamp]);
+
+      const liveRate = useMemo(() => {
+        if (base24Rate != null) return base24Rate;
+        const manual = parseFloat(manual24Rate);
+        return Number.isFinite(manual) ? manual : null;
+      }, [base24Rate, manual24Rate]);
+
+      const effectivePerGram = useMemo(() => {
+        // Primary source is the India Gold 10g per-gram rate; fall back to the live 24K rate if unavailable
+        if (indiaGold10gPerGram != null) return indiaGold10gPerGram;
+        return liveRate;
+      }, [indiaGold10gPerGram, liveRate]);
+
+      const presentRate = useMemo(() => {
+        if (effectivePerGram == null) return null;
+        return effectivePerGram * selectedKarat.purity; // numeric value (₹ per gram)
+      }, [effectivePerGram, selectedKarat]);
+
+      async function fetchLive24KRate() {
+        try {
+          setStatus('Fetching live gold rates (GoldAPI preferred)...');
+          setFetchError('');
+          let gramRate = null; // per-gram live 24K rate
+          let india10gRate = null; // india 10g rate (whole 10g)
+          let lastError = null;
+
+          // Try GoldAPI first (convert from troy ounce to gram)
+          try {
+            const GOLDAPI_KEY = 'goldapi-ce7db236748d785f92e732730263f4e1-io';
+            const resp = await fetch('https://www.goldapi.io/api/XAU/INR', {
+              headers: {
+                'x-access-token': GOLDAPI_KEY,
+                'Content-Type': 'application/json'
+              }
+            });
+            if (resp.ok) {
+              const j = await resp.json();
+              // prefer direct per-gram 24K field if provided by GoldAPI
+              const gramField = j.price_gram_24k || j.price_gram_24k_raw || null;
+              if (isValidRate(gramField)) {
+                gramRate = parseFloat(gramField);
+                india10gRate = gramRate * 10;
+              } else {
+                const ozPrice = parseFloat(j.price);
+                if (isValidRate(ozPrice)) {
+                  const perGram = ozPrice / 31.1034768; // troy ounce -> gram
+                  gramRate = perGram;
+                  india10gRate = perGram * 10;
+                }
+              }
+            }
+          } catch (apiErr) {
+            lastError = apiErr;
+          }
+
+          // If GoldAPI didn't yield a valid gram rate, fall back to existing sources
+          if (!isValidRate(gramRate)) {
+            try {
+              const response = await fetch(RATE_ENDPOINT_24K_GRAM);
+              if (response.ok) {
+                const text = await response.text();
+                const parsed = parseSlnMjdmaRate(text);
+                if (isValidRate(parsed)) gramRate = parsed;
+              }
+            } catch (directError) {
+              lastError = lastError || directError;
+            }
+          }
+
+          if (!isValidRate(gramRate)) {
+            for (const url of LIVE_URLS) {
+              try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
+                const html = await response.text();
+                const parsed = parseLiveRate(html);
+                if (isValidRate(parsed)) {
+                  gramRate = parsed;
+                  break;
+                }
+              } catch (proxyError) {
+                lastError = lastError || proxyError;
+              }
+            }
+          }
+
+          // Still attempt to fetch India Gold 10g endpoint for backup / derived values
+          try {
+            const response = await fetch(RATE_ENDPOINT_INDIA_GOLD_10G);
+            if (response.ok) {
+              const text = await response.text();
+              const parsed10g = parseSlnIndiaGold10gRate(text);
+              if (isValidRate(parsed10g)) {
+                india10gRate = parsed10g;
+              }
+            }
+          } catch (directError) {
+            lastError = lastError || directError;
+          }
+
+          if (!isValidRate(gramRate) && !isValidRate(india10gRate)) {
+            throw lastError || new Error('Rate parse failed');
+          }
+
+          // If we have only a 10g value, convert to per-gram
+          if (!isValidRate(gramRate) && isValidRate(india10gRate)) {
+            gramRate = india10gRate / 10;
+          }
+
+          setBase24Rate(isValidRate(gramRate) ? gramRate : null);
+          if (isValidRate(india10gRate)) {
+            setIndiaGold10gRate(india10gRate);
+            setIndiaGold10gPerGram(india10gRate / 10);
+          } else if (isValidRate(gramRate)) {
+            // derive 10g equivalent when only gram rate is available
+            setIndiaGold10gRate(gramRate * 10);
+            setIndiaGold10gPerGram(gramRate);
+          } else {
+            setIndiaGold10gRate(null);
+            setIndiaGold10gPerGram(null);
+          }
+
+          setStatus('Live gold rates loaded');
+          setManual24Rate('');
+        } catch (error) {
+          setBase24Rate(null);
+          setIndiaGold10gRate(null);
+          setIndiaGold10gPerGram(null);
+          setFetchError('Live fetch failed. Enter the 24K rate manually below.');
+          setStatus('Manual rate mode');
+        }
+      }
+
+      function calculateBuy() {
+        const grams = parseFloat(weight) || 0;
+        const rate = (presentRate != null ? presentRate : 0) || 0;
+        const goldValue = grams * rate;
+        const making = goldValue * ((parseFloat(makingCharges) || 0) / 100);
+        const subtotal = goldValue + making;
+        const gst = subtotal * ((parseFloat(tax) || 0) / 100);
+        const total = subtotal + gst;
+        return { goldValue, making, gst, total };
+      }
+
+      function calculateSell() {
+        const grams = parseFloat(weight) || 0;
+        const stones = parseFloat(stoneWeight) || 0;
+        const actualGoldGrams = Math.max(0, grams - stones);
+        const rate = parseFloat(sellRate) || (presentRate != null ? presentRate : 0) || 0;
+        const goldValue = actualGoldGrams * rate;
+        const total = goldValue + (parseFloat(diamondValue) || 0);
+        return { grams, stones, actualGoldGrams, goldValue, total };
+      }
+
+      function onSubmit(event) {
+        event.preventDefault();
+        if (mode === 'buy') {
+          const data = calculateBuy();
+          setResult(
+            <div className="card result-card p-3">
+              <div className="mb-3 d-flex justify-content-between"><span>Pure Gold Value</span><strong>{formatINR(data.goldValue)}</strong></div>
+              <div className="mb-3 d-flex justify-content-between"><span>Making Charges</span><strong>{formatINR(data.making)}</strong></div>
+              <div className="mb-3 d-flex justify-content-between"><span>Tax / GST</span><strong>{formatINR(data.gst)}</strong></div>
+              <hr />
+              <div className="mb-0 d-flex justify-content-between fs-5 fw-bold"><span>Total Buying Price</span><span>{formatINR(data.total)}</span></div>
+            </div>
+          );
+        } else {
+          const data = calculateSell();
+          setResult(
+            <div className="card result-card p-3">
+              <div className="mb-2 d-flex justify-content-between"><span>Total Jewellery Weight</span><strong>{(data.grams).toFixed(3)} g</strong></div>
+              <div className="mb-2 d-flex justify-content-between"><span>Stone Type</span><strong>{stoneType}</strong></div>
+              <div className="mb-2 d-flex justify-content-between"><span>Stone Weight</span><strong>{(data.stones).toFixed(3)} g</strong></div>
+              <div className="mb-2 d-flex justify-content-between"><span>Actual Gold Weight</span><strong>{(data.actualGoldGrams).toFixed(3)} g</strong></div>
+              <div className="mb-3 d-flex justify-content-between"><span>Gold Value ({formatINR(presentRate || 0)} /g)</span><strong>{formatINR(data.goldValue)}</strong></div>
+              <div className="mb-3 d-flex justify-content-between"><span>Diamond / Stone Value</span><strong>{formatINR(parseFloat(diamondValue) || 0)}</strong></div>
+              <hr />
+              <div className="mb-0 d-flex justify-content-between fs-5 fw-bold"><span>Estimated Sell Value</span><span>{formatINR(data.total)}</span></div>
+            </div>
+          );
+        }
+      }
+
+      return (
+        <>
+          <div className="d-flex gap-2 mb-3">
+            <button type="button" className={`btn ${mode === 'buy' ? 'btn-warning text-dark' : 'btn-outline-warning tab-btn'}`} onClick={() => setMode('buy')}>Buy</button>
+            <button type="button" className={`btn ${mode === 'sell' ? 'btn-secondary' : 'btn-outline-secondary tab-btn'}`} onClick={() => setMode('sell')}>Sell</button>
+          </div>
+
+          <div className="mb-3 p-3 rate-box">
+            {mode === 'buy' ? (
+              <div className="p-3 bg-white rounded-3 border">
+                <div className="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                  <div>
+                    <div className="text-muted small">India Gold 10g Live Rate</div>
+                    <div className="fs-4 fw-semibold">{indiaGold10gPerGram != null ? `${formatINR(indiaGold10gPerGram)} /g` : (liveRate != null ? `${formatINR(liveRate)} /g` : '-')}</div>
+                    {indiaGold10gPerGram != null && (
+                      <div className="text-muted small">Derived from India Gold 10g live rate</div>
+                    )}
+                  </div>
+                  <div className="text-end">
+                    <div className="text-muted small">Selected Karat Rate</div>
+                    <div className="fs-4 fw-semibold">{presentRate != null ? `${formatINR(presentRate)} /g` : '-'}</div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="p-3 bg-white rounded-3 border">
+                <div className="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                  <div>
+                    <div className="text-muted small">India Gold 10g Live Rate</div>
+                    <div className="fs-4 fw-semibold">{indiaGold10gPerGram != null ? `${formatINR(indiaGold10gPerGram)} /g` : (liveRate != null ? `${formatINR(liveRate)} /g` : '-')}</div>
+                    {indiaGold10gPerGram != null && (
+                      <div className="text-muted small">Derived from India Gold 10g live rate</div>
+                    )}
+                  </div>
+                  <div className="text-end">
+                    <div className="text-muted small">Selected Karat Rate</div>
+                    <div className="fs-4 fw-semibold">{presentRate != null ? `${formatINR(presentRate)} /g` : '-'}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="d-flex flex-column gap-1">
+              <span className="text-muted">{status}</span>
+              {fetchError && <span className="text-danger small">{fetchError}</span>}
+            </div>
+          </div>
+
+          <form onSubmit={onSubmit} className="row g-3">
+            <div className="col-12">
+              <label className="form-label">Select Karat</label>
+              <select className="form-select" value={selectedKarat.label} onChange={(event) => setSelectedKarat(KARAT_OPTIONS.find((item) => item.label === event.target.value))}>
+                {KARAT_OPTIONS.map((option) => (
+                  <option key={option.label} value={option.label}>{option.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label">Total Weight (grams)</label>
+              <input type="number" className="form-control" step="0.001" value={weight} onChange={(event) => setWeight(event.target.value)} placeholder="e.g. 15.5" required />
+            </div>
+            {mode === 'buy' && (
+              <>
+                <div className="col-md-6">
+                  <label className="form-label">Making Charges (%)</label>
+                  <input type="number" className="form-control" step="0.1" value={makingCharges} onChange={(event) => setMakingCharges(event.target.value)} />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Tax / GST (%)</label>
+                  <input type="number" className="form-control" step="0.1" value={tax} onChange={(event) => setTax(event.target.value)} />
+                </div>
+              </>
+            )}
+
+            {mode === 'buy' && (
+              <>
+                {base24Rate == null && (
+                  <div className="col-12">
+                    <label className="form-label">Manual 24K Rate (₹)</label>
+                    <input type="number" className="form-control" step="0.01" value={manual24Rate} onChange={(event) => setManual24Rate(event.target.value)} placeholder="Enter 24K rate if live fetch fails" />
+                  </div>
+                )}
+                <div className="col-12">
+                  <button type="button" className="btn btn-outline-dark w-100" onClick={fetchLive24KRate}>Refresh Rate</button>
+                </div>
+              </>
+            )}
+
+            {mode === 'sell' && (
+              <>
+                <div className="col-12">
+                  <div className="alert alert-warning py-2 mb-0" role="alert">
+                    Sell mode will use the same live rate as buy mode when no separate selling rate is entered.
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Selling Rate per gram (₹)</label>
+                  <input type="number" className="form-control" step="0.01" value={sellRate} onChange={(event) => setSellRate(event.target.value)} placeholder="Leave blank to use live rate" />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label">Stone Type</label>
+                  <select className="form-select" value={stoneType} onChange={(e) => setStoneType(e.target.value)}>
+                    <option>None</option>
+                    <option>Diamond</option>
+                    <option>Polki</option>
+                    <option>CZ</option>
+                    <option>Ruby</option>
+                    <option>Emerald</option>
+                    <option>Sapphire</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div className="col-md-2">
+                  <label className="form-label">Stone Wt (g)</label>
+                  <input type="number" className="form-control" step="0.001" value={stoneWeight} onChange={(event) => setStoneWeight(event.target.value)} />
+                </div>
+                <div className="col-12">
+                  <label className="form-label">Diamond / Stone Value (₹)</label>
+                  <input type="number" className="form-control" step="0.01" value={diamondValue} onChange={(event) => setDiamondValue(event.target.value)} />
+                </div>
+              </>
+            )}
+
+            <div className="col-12">
+              <button type="submit" className="btn btn-primary w-100">Calculate {mode === 'buy' ? 'Buying Price' : 'Selling Value'}</button>
+            </div>
+          </form>
+
+          {result && <div className="mt-4">{result}</div>}
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<GoldCalculator />);
+  </script>
+</body>
+</html>

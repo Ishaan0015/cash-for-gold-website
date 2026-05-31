@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gold Inquiry Form - Cash for Gold</title>
+    <meta name="description" content="Prepare a gold inquiry with item type, karat, weight, expected rate, and notes. The site creates a CSV file you can share with the Cash for Gold team." />
+    <link rel="stylesheet" href="query.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <div class="page-shell">
+        <a class="brand" href="index.html">Cash for Gold</a>
+        <nav class="page-nav">
+          <a href="Calculator.html">Calculator</a>
+          <a href="query.html" class="active">Inquiry Form</a>
+          <a href="contact.html">Contact Us</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-shell page-content">
+      <section class="hero-panel">
+        <p class="eyebrow">Inquiry Form</p>
+        <h1>Prepare your gold inquiry.</h1>
+        <p>Fill in your item details and download a CSV summary that can be shared with our team.</p>
+      </section>
+
+      <section class="form-panel">
+        <form id="queryForm" class="query-form">
+          <div class="form-row">
+            <label for="fullName">Full Name</label>
+            <input id="fullName" name="fullName" type="text" placeholder="Enter your name" required />
+          </div>
+
+          <div class="form-row">
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required />
+          </div>
+
+          <div class="form-row">
+            <label for="phone">Phone Number</label>
+            <input id="phone" name="phone" type="tel" placeholder="+91 98765 43210" required />
+          </div>
+
+          <div class="form-row split-grid">
+            <div>
+              <label for="goldType">Gold Item</label>
+              <select id="goldType" name="goldType" required>
+                <option value="">Select item type</option>
+                <option value="Chain">Chain</option>
+                <option value="Ring">Ring</option>
+                <option value="Bangle">Bangle</option>
+                <option value="Necklace">Necklace</option>
+                <option value="Coin">Coin</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="karat">Purity</label>
+              <select id="karat" name="karat" required>
+                <option value="">Select purity</option>
+                <option value="24K">24K</option>
+                <option value="22K">22K</option>
+                <option value="18K">18K</option>
+                <option value="14K">14K</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row split-grid">
+            <div>
+              <label for="weight">Weight (grams)</label>
+              <input id="weight" name="weight" type="number" min="0" step="0.01" placeholder="0.00" required />
+            </div>
+            <div>
+              <label for="rate">Expected Rate</label>
+              <input id="rate" name="rate" type="text" placeholder="Optional" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="notes">Additional Notes</label>
+            <textarea id="notes" name="notes" rows="5" placeholder="Add any extra details here."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Submit Inquiry</button>
+            <button type="reset" class="btn-secondary">Clear</button>
+          </div>
+
+          <div id="resultMessage" class="result-message" aria-live="polite"></div>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById('queryForm');
+      const resultMessage = document.getElementById('resultMessage');
+
+      const createCsvContent = (data) => {
+        const headers = ['Name', 'Email', 'Phone', 'Item', 'Purity', 'Weight (g)', 'Expected Rate', 'Notes', 'Submitted At'];
+        const rows = [headers, [
+          data.fullName,
+          data.email,
+          data.phone,
+          data.goldType,
+          data.karat,
+          data.weight,
+          data.rate,
+          data.notes,
+          data.timestamp
+        ]];
+        return rows.map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+      };
+
+      const downloadCsv = (content, filename) => {
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      };
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const data = {
+          fullName: formData.get('fullName') || '',
+          email: formData.get('email') || '',
+          phone: formData.get('phone') || '',
+          goldType: formData.get('goldType') || '',
+          karat: formData.get('karat') || '',
+          weight: formData.get('weight') || '',
+          rate: formData.get('rate') || '',
+          notes: formData.get('notes') || '',
+          timestamp: new Date().toISOString()
+        };
+        const csv = createCsvContent(data);
+        const filename = `gold-query-${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
+        downloadCsv(csv, filename);
+        resultMessage.textContent = 'Your inquiry CSV has been downloaded. Share this file with our team when you contact us.';
+      });
+    </script>
+  </body>
+</html>
